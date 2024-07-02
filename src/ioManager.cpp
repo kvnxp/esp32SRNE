@@ -1,14 +1,15 @@
 #include "ioManager.hpp"
 
 BluetoothSerial btSerial;
+HardwareSerial serial(0);
 
 // #define Serial btSerial
 
 void ioManager::init()
 {
-    Serial0.begin(115200);
+    serial.begin(115200);
     btSerial.begin("ESP32BT");
-    while (!Serial)
+    while (!serial)
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
@@ -17,7 +18,7 @@ void ioManager::init()
     {
         ;
     }
-    Serial0.println("Serial port initialized");
+    serial.println("Serial port initialized");
 
     // serialOut.println("Serial port initialized");
 }
@@ -25,7 +26,7 @@ void ioManager::init()
 void ioManager::println(String message)
 {
     btSerial.println(message);
-    Serial0.println(message);
+    serial.println(message);
 }
 
 String ioManager::getInput()
@@ -36,9 +37,9 @@ String ioManager::getInput()
 
     // int bInput = btSerial.read();
 
-    if (Serial0.available())
+    if (serial.available())
     {
-        cache = Serial0.readString();
+        cache = serial.readString();
     }
 
     if (btSerial.available())
@@ -54,35 +55,6 @@ String ioManager::getInput()
             data += (char)caracter;
         }
     }
-
-    // while (sInput > 0 && Serial0.available())
-    // {
-    //     if ((sInput == '\n' || sInput == '\r') && !full)
-    //     {
-    //         break;
-    //     }
-
-    //     data += (char)sInput;
-    //     char a = (char)sInput;
-    //     println(String(a));
-    //     sInput = Serial.read();
-    // }
-
-    // if (bInput > 0 && btSerial.available())
-    // {
-    //     working = true;
-    //     while (bInput > 0 && btSerial.available())
-    //     {
-    //         if ((bInput == '\n' || bInput == '\r') && !full)
-    //         {
-    //             break;
-    //         }
-
-    //         data += (char)bInput;
-    //         bInput = Serial.read();
-    //     }
-    //     working = false;
-    // }
 
     return data;
 }

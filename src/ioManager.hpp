@@ -1,5 +1,6 @@
 #include <HardwareSerial.h>
 #include "BluetoothSerial.h"
+#include "HardwareSerial.h"
 #include <WString.h>
 
 class ioManager

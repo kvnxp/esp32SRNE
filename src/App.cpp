@@ -58,15 +58,12 @@ void App::loop()
     String input = ioManager::getInput();
     if (input != "")
     {
-        printl("Input: " + input);
         menuSelector(currentPage);
     }
 }
 
 void App::menuSelector(int menu)
 {
-    printl("current page: " + String(currentPage));
-
     if (menu == -1)
     {
         MainMenu();
@@ -158,7 +155,7 @@ void App::wifiMenu()
         wifiMenu();
         break;
 
-    case 4:// wifi Status
+    case 4: // wifi Status
         wifiStatus(WiFi.status());
         printl("");
         printl("");
@@ -169,7 +166,7 @@ void App::wifiMenu()
         }
         break;
 
-    default: // any key to reload menu 
+    default: // any key to reload menu
         menuSelector(currentPage);
         break;
     }
