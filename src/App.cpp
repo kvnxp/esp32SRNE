@@ -2,12 +2,21 @@
 #define printl ioManager::println
 
 int App::currentPage;
-wifiManager wifiManager;
+WifiManager wifiManager;
+
+void showMenu(vector<String> menu)
+{
+    for (size_t i = 0; i < menu.size(); i++)
+    {
+        printl(String(i) + ": " + menu[i]);
+    }
+}
 
 void App::init()
 {
     ioManager::init();
     currentPage = -1;
+    wifiManager.autoConectWifi();
 }
 
 void App::loop()
@@ -36,7 +45,8 @@ void App::menuSelector(int menu)
         case 1:
             wifiMenu();
             break;
-
+        case 2:
+            miscMenu();
         default:
             menuSelector(currentPage);
             break;
@@ -52,10 +62,7 @@ void App::MainMenu()
 
     vector<String> menuItems = {"exit", "wifi", "config"};
 
-    for (size_t i = 0; i < menuItems.size(); i++)
-    {
-        printl(String(i) + ": " + menuItems[i]);
-    }
+    showMenu(menuItems);
 
     int inputNumber = ioManager::waitNumberInput();
     menuSelector(inputNumber);
@@ -68,12 +75,7 @@ void App::wifiMenu()
 
     vector<String> menuItems = {"Back", "SSID", "password", "connect", "status"};
 
-    int i = 0;
-    for (const String &item : menuItems)
-    {
-        printl(String(i) + ": " + menuItems[i]);
-        i++;
-    }
+    showMenu(menuItems);
 
     int input = ioManager::waitNumberInput();
 
@@ -113,6 +115,24 @@ void App::wifiMenu()
     }
 }
 
-void App::misc()
+void App::miscMenu()
 {
+    printl("Misc Menu");
+    vector<String> menuItems = {"Back", "saveProfile", "loadProfile", "deleteProfile"};
+
+    showMenu(menuItems);
+
+    int select = ioManager::waitNumberInput();
+
+    switch (select)
+    {
+    case 0:
+        MainMenu();
+    case 1:
+        wifiManager.saveProfile();
+        break;
+    case 2:
+        wifiManager.loadProfile();
+        break;
+    }
 }

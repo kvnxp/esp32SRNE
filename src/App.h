@@ -16,7 +16,7 @@ public:
     void menuSelector(int menu);
     void MainMenu();
     void wifiMenu();
-    void misc();
+    void miscMenu();
 
     // void waitForInput();
 };

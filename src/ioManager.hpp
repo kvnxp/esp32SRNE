@@ -2,6 +2,8 @@
 #include "BluetoothSerial.h"
 #include "HardwareSerial.h"
 #include <WString.h>
+#include "SPIFFS.h"
+
 #pragma once
 
 class ioManager
