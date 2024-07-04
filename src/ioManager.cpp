@@ -1,4 +1,5 @@
 #include "ioManager.hpp"
+#include "SPIFFS.h"
 
 BluetoothSerial btSerial;
 HardwareSerial serial(0);
@@ -7,6 +8,7 @@ HardwareSerial serial(0);
 
 void ioManager::init()
 {
+
     serial.begin(115200);
     btSerial.begin("ESP32BT");
     while (!serial)
@@ -20,6 +22,10 @@ void ioManager::init()
     }
     serial.println("Serial port initialized");
 
+    if (!SPIFFS.begin(true))
+    {
+        println("SPIFFS Mount Failed");
+    }
     // serialOut.println("Serial port initialized");
 }
 
@@ -86,4 +92,30 @@ int ioManager::waitNumberInput()
 BluetoothSerial *ioManager::getSerialBT()
 {
     return &btSerial;
+}
+
+void ioManager::writeTextFile(const char *path, const char *text)
+{
+
+    File file = SPIFFS.open(path);
+    if (!file)
+    {
+        println("Error to write file ");
+        return;
+    }
+    file.print(text);
+    file.close();
+}
+
+String ioManager::readTextFile(const char *path)
+{
+    File file = SPIFFS.open(path);
+    if (!file)
+    {
+        println("Error to read file ");
+        return "";
+    }
+    String data = file.readString();
+    file.close();
+    return data;
 }

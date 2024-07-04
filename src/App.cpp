@@ -1,51 +1,8 @@
 #include "App.h"
-#include <WiFi.h>
 #define printl ioManager::println
 
 int App::currentPage;
-String ssid = "";
-String password = "";
-
-wl_status_t wifiSetup()
-{
-    return WiFi.begin(ssid, password);
-}
-
-void wifiStatus(wl_status_t wstatus)
-{
-    printl("Status CODE:" + String(wstatus));
-    switch (wstatus)
-    {
-    case WL_STOPPED:
-        printl("[WiFi] Stoped");
-        break;
-    case WL_NO_SSID_AVAIL:
-        printl("[WiFi] SSID not found");
-        break;
-    case WL_CONNECT_FAILED:
-        printl("[WiFi] Failed - WiFi not connected! Reason: ");
-        break;
-    case WL_CONNECTION_LOST:
-        printl("[WiFi] Connection was lost");
-        break;
-    case WL_SCAN_COMPLETED:
-        printl("[WiFi] Scan is completed");
-        break;
-    case WL_DISCONNECTED:
-        printl("[WiFi] WiFi is disconnected");
-        break;
-    case WL_CONNECTED:
-        printl("[WiFi] WiFi is connected!");
-        printl("SSID: " + ssid);
-        printl("[WiFi] IP address: " + WiFi.localIP().toString());
-        break;
-    default:
-        printl("[WiFi] WiFi Status: ");
-        printl(String(WiFi.status()));
-
-        break;
-    }
-}
+wifiManager wifiManager;
 
 void App::init()
 {
@@ -127,38 +84,22 @@ void App::wifiMenu()
         break;
 
     case 1: // input SSID
-        printl("current SSID: " + ssid);
-        printl("ingress SSID Name");
-        ssid = ioManager::waitForInput();
-        menuSelector(currentPage);
+        wifiManager.inputSSID();
+        wifiMenu();
         break;
 
     case 2: // input password
-        printl("ingress Password");
-        password = ioManager::waitForInput();
-        menuSelector(currentPage);
+        wifiManager.inputPassword();
+        wifiMenu();
         break;
 
     case 3: // menu connect
-        printl("connect with network:");
-        printl("SSID: " + ssid);
-        printl("passwd: " + password);
-        printl("");
-        printl(" yes[1]  no[2]");
-        printl("");
-
-        if (ioManager::waitNumberInput() == 1)
-        {
-            printl("connecting...");
-            wifiStatus(wifiSetup());
-        }
+        wifiManager.connect();
         wifiMenu();
         break;
 
     case 4: // wifi Status
-        wifiStatus(WiFi.status());
-        printl("");
-        printl("");
+        wifiManager.getStatus();
         printl("any key to back");
         if (ioManager::waitForInput() != "")
         {
@@ -170,4 +111,8 @@ void App::wifiMenu()
         menuSelector(currentPage);
         break;
     }
+}
+
+void App::misc()
+{
 }
