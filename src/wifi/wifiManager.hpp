@@ -1,6 +1,7 @@
 #include "WiFi.h"
 #include "../ioManager.hpp"
 #include "ArduinoJson.h"
+
 #define printl ioManager::println
 
 class WifiManager

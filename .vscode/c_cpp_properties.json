@@ -20,6 +20,8 @@
                 "/Users/kvnxpmac/Library/Arduino15/packages/esp32/hardware/esp32/3.0.1/libraries/BluetoothSerial/src",
                 "/Users/kvnxpmac/Library/Arduino15/packages/esp32/hardware/esp32/3.0.1/libraries/SPIFFS/src",
                 "/Users/kvnxpmac/Library/Arduino15/packages/esp32/hardware/esp32/3.0.1/libraries/FS/src",
+                "/Users/kvnxpmac/Library/Arduino15/packages/esp32/hardware/esp32/3.0.1/libraries/HTTPClient/src",
+                "/Users/kvnxpmac/Library/Arduino15/packages/esp32/hardware/esp32/3.0.1/libraries/NetworkClientSecure/src",
                 "/Users/kvnxpmac/Documents/Arduino/libraries/ArduinoJson/src",
                 "/Users/kvnxpmac/Documents/Arduino/libraries/ModbusMaster/src",
                 "/Users/kvnxpmac/Library/Arduino15/packages/esp32/tools/esp-x32/2302/xtensa-esp32-elf/include/c++/12.2.0",

@@ -3,6 +3,7 @@
 #include "HardwareSerial.h"
 #include <WString.h>
 #include "SPIFFS.h"
+#include <HTTPClient.h>
 
 #pragma once
 
@@ -18,4 +19,5 @@ public:
     static BluetoothSerial *getSerialBT();
     static void writeTextFile(const char *path, const char *text);
     static String readTextFile(const char *path);
+    static void sendToHttpClient(String data);
 };

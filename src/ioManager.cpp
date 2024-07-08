@@ -119,3 +119,29 @@ String ioManager::readTextFile(const char *path)
     file.close();
     return data;
 }
+
+void ioManager::sendToHttpClient(String data)
+{
+
+    HTTPClient client;
+
+    String url = "";
+    String token = "";
+    client.begin(url);
+    client.addHeader("X-Auth-Token", token);
+    client.addHeader("Content-Type", "application/json");
+
+    int result = client.POST(data);
+    if (result > 0)
+    {
+        ioManager::println("HTTP Result " + String(result));
+        ioManager::println(client.getString());
+    }
+    else
+    {
+        println("error to send ");
+        println(String(result));
+        println(String(client.getString()));
+    }
+    client.end();
+}
