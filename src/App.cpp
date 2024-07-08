@@ -1,49 +1,14 @@
 #include "App.h"
-#include <WiFi.h>
 #define printl ioManager::println
 
 int App::currentPage;
-String ssid = "";
-String password = "";
+WifiManager wifiManager;
 
-wl_status_t wifiSetup()
+void showMenu(vector<String> menu)
 {
-    return WiFi.begin(ssid, password);
-}
-
-void wifiStatus(wl_status_t wstatus)
-{
-    printl("Status CODE:" + String(wstatus));
-    switch (wstatus)
+    for (size_t i = 0; i < menu.size(); i++)
     {
-    case WL_STOPPED:
-        printl("[WiFi] Stoped");
-        break;
-    case WL_NO_SSID_AVAIL:
-        printl("[WiFi] SSID not found");
-        break;
-    case WL_CONNECT_FAILED:
-        printl("[WiFi] Failed - WiFi not connected! Reason: ");
-        break;
-    case WL_CONNECTION_LOST:
-        printl("[WiFi] Connection was lost");
-        break;
-    case WL_SCAN_COMPLETED:
-        printl("[WiFi] Scan is completed");
-        break;
-    case WL_DISCONNECTED:
-        printl("[WiFi] WiFi is disconnected");
-        break;
-    case WL_CONNECTED:
-        printl("[WiFi] WiFi is connected!");
-        printl("SSID: " + ssid);
-        printl("[WiFi] IP address: " + WiFi.localIP().toString());
-        break;
-    default:
-        printl("[WiFi] WiFi Status: ");
-        printl(String(WiFi.status()));
-
-        break;
+        printl(String(i) + ": " + menu[i]);
     }
 }
 
@@ -51,6 +16,7 @@ void App::init()
 {
     ioManager::init();
     currentPage = -1;
+    wifiManager.autoConectWifi();
 }
 
 void App::loop()
@@ -58,15 +24,12 @@ void App::loop()
     String input = ioManager::getInput();
     if (input != "")
     {
-        printl("Input: " + input);
         menuSelector(currentPage);
     }
 }
 
 void App::menuSelector(int menu)
 {
-    printl("current page: " + String(currentPage));
-
     if (menu == -1)
     {
         MainMenu();
@@ -82,7 +45,8 @@ void App::menuSelector(int menu)
         case 1:
             wifiMenu();
             break;
-
+        case 2:
+            miscMenu();
         default:
             menuSelector(currentPage);
             break;
@@ -98,10 +62,7 @@ void App::MainMenu()
 
     vector<String> menuItems = {"exit", "wifi", "config"};
 
-    for (size_t i = 0; i < menuItems.size(); i++)
-    {
-        printl(String(i) + ": " + menuItems[i]);
-    }
+    showMenu(menuItems);
 
     int inputNumber = ioManager::waitNumberInput();
     menuSelector(inputNumber);
@@ -114,12 +75,7 @@ void App::wifiMenu()
 
     vector<String> menuItems = {"Back", "SSID", "password", "connect", "status"};
 
-    int i = 0;
-    for (const String &item : menuItems)
-    {
-        printl(String(i) + ": " + menuItems[i]);
-        i++;
-    }
+    showMenu(menuItems);
 
     int input = ioManager::waitNumberInput();
 
@@ -130,38 +86,22 @@ void App::wifiMenu()
         break;
 
     case 1: // input SSID
-        printl("current SSID: " + ssid);
-        printl("ingress SSID Name");
-        ssid = ioManager::waitForInput();
-        menuSelector(currentPage);
-        break;
-
-    case 2: // input password
-        printl("ingress Password");
-        password = ioManager::waitForInput();
-        menuSelector(currentPage);
-        break;
-
-    case 3: // menu connect
-        printl("connect with network:");
-        printl("SSID: " + ssid);
-        printl("passwd: " + password);
-        printl("");
-        printl(" yes[1]  no[2]");
-        printl("");
-
-        if (ioManager::waitNumberInput() == 1)
-        {
-            printl("connecting...");
-            wifiStatus(wifiSetup());
-        }
+        wifiManager.inputSSID();
         wifiMenu();
         break;
 
-    case 4:// wifi Status
-        wifiStatus(WiFi.status());
-        printl("");
-        printl("");
+    case 2: // input password
+        wifiManager.inputPassword();
+        wifiMenu();
+        break;
+
+    case 3: // menu connect
+        wifiManager.connect();
+        wifiMenu();
+        break;
+
+    case 4: // wifi Status
+        wifiManager.getStatus();
         printl("any key to back");
         if (ioManager::waitForInput() != "")
         {
@@ -169,8 +109,30 @@ void App::wifiMenu()
         }
         break;
 
-    default: // any key to reload menu 
+    default: // any key to reload menu
         menuSelector(currentPage);
+        break;
+    }
+}
+
+void App::miscMenu()
+{
+    printl("Misc Menu");
+    vector<String> menuItems = {"Back", "saveProfile", "loadProfile", "deleteProfile"};
+
+    showMenu(menuItems);
+
+    int select = ioManager::waitNumberInput();
+
+    switch (select)
+    {
+    case 0:
+        MainMenu();
+    case 1:
+        wifiManager.saveProfile();
+        break;
+    case 2:
+        wifiManager.loadProfile();
         break;
     }
 }

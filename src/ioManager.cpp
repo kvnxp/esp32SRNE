@@ -1,14 +1,17 @@
 #include "ioManager.hpp"
+#include "SPIFFS.h"
 
 BluetoothSerial btSerial;
+HardwareSerial serial(0);
 
 // #define Serial btSerial
 
 void ioManager::init()
 {
-    Serial0.begin(115200);
+
+    serial.begin(115200);
     btSerial.begin("ESP32BT");
-    while (!Serial)
+    while (!serial)
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
@@ -17,15 +20,19 @@ void ioManager::init()
     {
         ;
     }
-    Serial0.println("Serial port initialized");
+    serial.println("Serial port initialized");
 
+    if (!SPIFFS.begin(true))
+    {
+        println("SPIFFS Mount Failed");
+    }
     // serialOut.println("Serial port initialized");
 }
 
 void ioManager::println(String message)
 {
     btSerial.println(message);
-    Serial0.println(message);
+    serial.println(message);
 }
 
 String ioManager::getInput()
@@ -36,9 +43,9 @@ String ioManager::getInput()
 
     // int bInput = btSerial.read();
 
-    if (Serial0.available())
+    if (serial.available())
     {
-        cache = Serial0.readString();
+        cache = serial.readString();
     }
 
     if (btSerial.available())
@@ -54,35 +61,6 @@ String ioManager::getInput()
             data += (char)caracter;
         }
     }
-
-    // while (sInput > 0 && Serial0.available())
-    // {
-    //     if ((sInput == '\n' || sInput == '\r') && !full)
-    //     {
-    //         break;
-    //     }
-
-    //     data += (char)sInput;
-    //     char a = (char)sInput;
-    //     println(String(a));
-    //     sInput = Serial.read();
-    // }
-
-    // if (bInput > 0 && btSerial.available())
-    // {
-    //     working = true;
-    //     while (bInput > 0 && btSerial.available())
-    //     {
-    //         if ((bInput == '\n' || bInput == '\r') && !full)
-    //         {
-    //             break;
-    //         }
-
-    //         data += (char)bInput;
-    //         bInput = Serial.read();
-    //     }
-    //     working = false;
-    // }
 
     return data;
 }
@@ -114,4 +92,56 @@ int ioManager::waitNumberInput()
 BluetoothSerial *ioManager::getSerialBT()
 {
     return &btSerial;
+}
+
+void ioManager::writeTextFile(const char *path, const char *text)
+{
+
+    File file = SPIFFS.open(path);
+    if (!file)
+    {
+        println("Error to write file ");
+        return;
+    }
+    file.print(text);
+    file.close();
+}
+
+String ioManager::readTextFile(const char *path)
+{
+    File file = SPIFFS.open(path);
+    if (!file)
+    {
+        println("Error to read file ");
+        return "";
+    }
+    String data = file.readString();
+    file.close();
+    return data;
+}
+
+void ioManager::sendToHttpClient(String data)
+{
+
+    HTTPClient client;
+
+    String url = "";
+    String token = "";
+    client.begin(url);
+    client.addHeader("X-Auth-Token", token);
+    client.addHeader("Content-Type", "application/json");
+
+    int result = client.POST(data);
+    if (result > 0)
+    {
+        ioManager::println("HTTP Result " + String(result));
+        ioManager::println(client.getString());
+    }
+    else
+    {
+        println("error to send ");
+        println(String(result));
+        println(String(client.getString()));
+    }
+    client.end();
 }

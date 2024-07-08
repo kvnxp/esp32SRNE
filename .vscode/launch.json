@@ -4,9 +4,10 @@
             "command": "./upload.sh",
             "name": "upload data",
             "request": "launch",
-            "type": "node-terminal"
-        }
-,
+            "type": "node-terminal",
+            "preLaunchTask": "closeSerial",
+            // "postDebugTask": "openSerial",
+        },
 
         {
             "name": "C/C++: clang build and debug active file",

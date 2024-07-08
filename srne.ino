@@ -1,7 +1,6 @@
-#include <PubSubClient.h>
-
 #include "src/App.h"
 #include "src/srnemodbus.hpp"
+#include "HardwareSerial.h"
 
 #define printl ioManager::println
 

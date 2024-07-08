@@ -1,6 +1,8 @@
+#include "wifi/wifiManager.hpp"
 #include "ioManager.hpp"
 #include <vector>
 #define vector std::vector
+#pragma once
 
 class App
 {
@@ -14,5 +16,7 @@ public:
     void menuSelector(int menu);
     void MainMenu();
     void wifiMenu();
+    void miscMenu();
+
     // void waitForInput();
 };
