@@ -4,7 +4,7 @@
 #include "HardwareSerial.h"
 #include "ioManager.hpp"
 
-#define printl ioManager::println
+#define printl ioManager::statusPrintln
 
 
 

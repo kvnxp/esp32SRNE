@@ -55,6 +55,7 @@
         "unordered_map": "cpp",
         "string_view": "cpp",
         "*.tcc": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "format": "cpp"
     }
 }

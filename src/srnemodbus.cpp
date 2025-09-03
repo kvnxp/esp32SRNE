@@ -58,13 +58,22 @@ unsigned long lastTime;
 
 void srnemodbus::setup()
 {
-    Serial.println("SRNE Setup...");
+    ioManager::statusPrintln("[INIT] Initializing SRNE Modbus...");
+    
+    ioManager::statusPrintln("SRNE Setup...");
     serial2.begin(9600, SERIAL_8N1, 16, 17);
+    ioManager::statusPrintln("[INIT] Serial2 initialized at 9600 baud for Modbus communication");
+    
     node.begin(MODBUS_SLAVE_ADDR, serial2);
+    ioManager::statusPrintln("[INIT] Modbus node initialized with slave address: " + String(MODBUS_SLAVE_ADDR));
+    
     state = WAIT;
-
+    ioManager::statusPrintln("[INIT] Modbus state set to WAIT");
+    
     delay(SETUP_FINISH_DELAY);
-    Serial.println("SRNE Setup end");
+    ioManager::statusPrintln("SRNE Setup end");
+    ioManager::statusPrintln("[INIT] SRNE Modbus initialization complete");
+    
     lastTime = millis();
 }
 
@@ -92,17 +101,14 @@ void readNode()
         {
             chargeControllerRegisterData[j] = node.getResponseBuffer(j);
         }
-        printl("TTL connected ");
+        ioManager::println("TTL connected ");
         state = TRANSMIT;
     }
     else
     {
         modbusErr = 1;
-        printl("Failed to connect with device" + String(result));
-        Serial.print(F("Failed to read from CC"));
-        Serial.print(F(" ("));
-        Serial.print(result, HEX);
-        Serial.println(F(")"));
+        ioManager::statusPrintln("Failed to connect with device" + String(result));
+        ioManager::statusPrintln("Failed to read from CC (" + String(result, HEX) + ")");
     }
 }
 
@@ -261,7 +267,7 @@ void srnemodbus::loop()
         if (elapsedTime >= 30000)
         {                           // If 1 minute has passed
             lastTime = currentTime; // Update the last time to the current time
-            printl("send Data to dashboard");
+            ioManager::println("send Data to dashboard");
             ioManager::sendToHttpClient(energyData);
             state = WAIT;
         }

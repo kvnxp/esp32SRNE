@@ -1,38 +1,62 @@
 #include "ioManager.hpp"
 #include "SPIFFS.h"
 
-BluetoothSerial btSerial;
+BluetoothManager ioManager::bluetoothManager;
+bool ioManager::menuActive = false;
 HardwareSerial serial(0);
 
 // #define Serial btSerial
 
 void ioManager::init()
 {
-
-    serial.begin(115200);
-    btSerial.begin("ESP32BT");
-    while (!serial)
-    {
-        ; // wait for serial port to connect. Needed for native USB port only
-    }
-
-    while (!btSerial)
-    {
-        ;
-    }
-    serial.println("Serial port initialized");
-
+    Serial.begin(115200);
+    println("[INIT] Initializing I/O Manager...");
+    
+    // serial.begin(115200);
+    println("[INIT] Serial port initialized at 115200 baud");
+    
+    bluetoothManager.init();
+    println("[INIT] Bluetooth Manager initialized");
+    
     if (!SPIFFS.begin(true))
     {
         println("SPIFFS Mount Failed");
+    } else {
+        println("[INIT] SPIFFS file system mounted successfully");
     }
-    // serialOut.println("Serial port initialized");
 }
 
 void ioManager::println(String message)
 {
-    btSerial.println(message);
-    serial.println(message);
+    // Only print background messages if menu is not active
+    if (!menuActive) {
+        bluetoothManager.println(message);
+        Serial.println(message);
+    }
+}
+
+void ioManager::statusPrintln(String message)
+{
+    // Always print status messages (errors, debug, important notifications)
+    bluetoothManager.println(message);
+    Serial.println(message);
+}
+
+void ioManager::menuPrintln(String message)
+{
+    // Always print menu messages
+    bluetoothManager.println(message);
+    Serial.println(message);
+}
+
+void ioManager::setMenuActive(bool active)
+{
+    menuActive = active;
+}
+
+bool ioManager::isMenuActive()
+{
+    return menuActive;
 }
 
 String ioManager::getInput()
@@ -43,14 +67,14 @@ String ioManager::getInput()
 
     // int bInput = btSerial.read();
 
-    if (serial.available())
+    if (Serial.available())
     {
-        cache = serial.readString();
+        cache = Serial.readString();
     }
 
-    if (btSerial.available())
+    if (bluetoothManager.available())
     {
-        cache = btSerial.readString();
+        cache = bluetoothManager.readString();
     }
 
     for (size_t i = 0; i < cache.length(); i++)
@@ -91,7 +115,7 @@ int ioManager::waitNumberInput()
 
 BluetoothSerial *ioManager::getSerialBT()
 {
-    return &btSerial;
+    return bluetoothManager.getSerial();
 }
 
 void ioManager::writeTextFile(const char *path, const char *text)
@@ -144,4 +168,14 @@ void ioManager::sendToHttpClient(String data)
         println(String(client.getString()));
     }
     client.end();
+}
+
+void ioManager::setBluetoothName(String name)
+{
+    bluetoothManager.setBluetoothName(name);
+}
+
+String ioManager::getBluetoothName()
+{
+    return bluetoothManager.getBluetoothName();
 }

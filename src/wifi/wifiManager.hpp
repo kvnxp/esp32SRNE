@@ -2,14 +2,20 @@
 #include "../ioManager.hpp"
 #include "ArduinoJson.h"
 
-#define printl ioManager::println
+#define printl ioManager::menuPrintln
 
 class WifiManager
 {
 private:
+    String ssid;
+    String password;
+    String wifiFileName = "wifiProfile.json";
+
 public:
-    WifiManager(){
-        // autoConectWifi();
+    WifiManager()
+    {
+        ssid = "";
+        password = "";
     }
     void inputSSID();
     void inputPassword();
@@ -18,4 +24,8 @@ public:
     void saveProfile();
     void loadProfile();
     void autoConectWifi();
+    bool isConnected();
+    void checkAndReconnect();
+    void reconnect();
+    void quickSetup();
 };
