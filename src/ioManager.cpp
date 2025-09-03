@@ -15,15 +15,16 @@ void ioManager::init()
     // serial.begin(115200);
     println("[INIT] Serial port initialized at 115200 baud");
     
-    bluetoothManager.init();
-    println("[INIT] Bluetooth Manager initialized");
-    
+    // Initialize SPIFFS first before Bluetooth Manager
     if (!SPIFFS.begin(true))
     {
         println("SPIFFS Mount Failed");
     } else {
         println("[INIT] SPIFFS file system mounted successfully");
     }
+    
+    bluetoothManager.init();
+    println("[INIT] Bluetooth Manager initialized");
 }
 
 void ioManager::println(String message)
@@ -120,8 +121,7 @@ BluetoothSerial *ioManager::getSerialBT()
 
 void ioManager::writeTextFile(const char *path, const char *text)
 {
-
-    File file = SPIFFS.open(path);
+    File file = SPIFFS.open(path, FILE_WRITE);
     if (!file)
     {
         println("Error to write file ");
@@ -133,7 +133,7 @@ void ioManager::writeTextFile(const char *path, const char *text)
 
 String ioManager::readTextFile(const char *path)
 {
-    File file = SPIFFS.open(path);
+    File file = SPIFFS.open(path, FILE_READ);
     if (!file)
     {
         println("Error to read file ");
