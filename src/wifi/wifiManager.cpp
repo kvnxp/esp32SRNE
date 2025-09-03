@@ -75,6 +75,8 @@ void WifiManager::inputSSID()
     {
         ssid = input;
         printl("SSID set to: " + ssid);
+        saveProfile(); // Automatically save when SSID is changed
+        printl("Settings saved automatically.");
     }
     else
     {
@@ -87,6 +89,8 @@ void WifiManager::inputPassword()
     printl("Enter password:");
     password = ioManager::waitForInput();
     printl("Password set.");
+    saveProfile(); // Automatically save when password is changed
+    printl("Settings saved automatically.");
 }
 
 void WifiManager::connect()

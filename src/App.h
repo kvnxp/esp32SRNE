@@ -4,7 +4,7 @@
 #define vector std::vector
 #pragma once
 
-enum MenuState { MAIN_MENU, WIFI_MENU, MISC_MENU, BLUETOOTH_MENU };
+enum MenuState { MAIN_MENU, WIFI_MENU, BLUETOOTH_MENU };
 
 class App
 {
@@ -22,13 +22,15 @@ public:
     void processInput();
     void handleMainMenu(int selection);
     void handleWifiMenu(int selection);
-    void handleMiscMenu(int selection);
     void handleBluetoothMenu(int selection);
     void menuSelector(int menu);
     void MainMenu();
     void wifiMenu();
-    void miscMenu();
     void bluetoothMenu();
+    void showSystemStatus();
+    void requestBluetoothName();
+    void showMenu(const vector<String>& items, const String& title = "");
+    void exitMenu();
 
     // void waitForInput();
 };
